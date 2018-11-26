@@ -24,7 +24,5 @@ class RssFeedFetcher:
                     feedItem.publication_date = element.text
                 elif element.tag == "link":
                     feedItem.link = element.text
-            if not hasattr(feedItem,'guid'):
-                feedItem.guid = feedItem.link
             feeds.append(feedItem)
         return feeds

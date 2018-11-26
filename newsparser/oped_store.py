@@ -44,7 +44,7 @@ class OpEdStore:
         with connection:
             cursor = connection.cursor()
             for article in articles:
-                cursor.execute(PostgreQueries['add_article'],(category.id,article.guid,article.title,article.description,article.publication_date))
+                cursor.execute(PostgreQueries['add_article'],(category.id,article.link,article.title,article.description,article.publication_date))
 
 
     def get_articles(self):
