@@ -8,4 +8,5 @@ class HackerNewsManager:
         store = HackerNewsStore()
         for article in articles:
             store.add_article(article)
-
+hn = HackerNewsManager()
+hn.process()
