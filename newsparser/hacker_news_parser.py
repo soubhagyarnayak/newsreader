@@ -1,5 +1,4 @@
-from bs4 import BeautifulSoup
-import requests
+from feed_fetcher import HtmlFetcher
 
 HACKER_NEWS_URL = "https://news.ycombinator.com/"
 
@@ -23,10 +22,11 @@ class HackerNewsParser:
             url_article_map.update(page_url_article_map)
             page_id +=1
         return url_article_map
+
     def parse_page(self, page_url):
         url_article_map = {}
-        response = requests.get(page_url)
-        page_content = BeautifulSoup(response.text,features="lxml")
+        fetcher = HtmlFetcher()
+        page_content = fetcher.get_raw_content(page_url)
         articles = page_content.find_all("tr",class_="athing")
         for article in articles:
             id = article.get("id")
