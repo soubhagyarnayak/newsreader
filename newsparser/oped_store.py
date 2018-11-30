@@ -4,8 +4,8 @@ from database_utils import DatabaseHelper
 
 PostgreQueries = {
     "create_category_table": "CREATE TABLE IF NOT EXISTS OpEdCategory (Id SERIAL PRIMARY KEY, Link Text UNIQUE, Title TEXT, Description TEXT, CreateTime TIMESTAMPTZ DEFAULT NOW());",
-    "create_article_table":"CREATE TABLE IF NOT EXISTS OpEdArticle (Id SERIAL PRIMARY KEY, CategoryId INTEGER REFERENCES OpEdCategory(id), Link TEXT UNIQUE, Title TEXT, Description TEXT, Notes TEXT, IsRead BOOL, IsRemoved BOOL, Tags TEXT, PublicationTime TIMESTAMPTZ, CreateTime TIMESTAMPTZ DEFAULT NOW());",
-    "add_article":u"INSERT INTO OpEdArticle (CategoryId, Link, Title, Description, PublicationTime) VALUES (%s,%s,%s,%s,%s) ON CONFLICT (Link) DO UPDATE SET Title = excluded.Title;",
+    "create_article_table":"CREATE TABLE IF NOT EXISTS OpEdArticle (Id SERIAL PRIMARY KEY, CategoryId INTEGER REFERENCES OpEdCategory(id), Link TEXT UNIQUE, Title TEXT, Description TEXT, Notes TEXT, IsRead BOOL, IsRemoved BOOL, Tags TEXT, PublicationTime TIMESTAMPTZ, CreateTime TIMESTAMPTZ DEFAULT NOW(),KeyWords TEXT, Summary TEXT);",
+    "add_article":u"INSERT INTO OpEdArticle (CategoryId, Link, Title, Description, PublicationTime,KeyWords,Summary) VALUES (%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (Link) DO UPDATE SET Title = excluded.Title,KeyWords=excluded.KeyWords,Summary=excluded.Summary;",
     "mark_article_removed": "UPDATE OpEdArticle SET IsRemoved = true WHERE Id=%s",
     "purge_removed_articles": "DELETE FROM OpEdArticle WHERE IsRemoved=true",
     "get_n_articles":"SELECT TOP %d ARTICLES FROM OpEdArticle WHERE !IsRemoved AND !IsRead ORDER BY CreateTime ASC",
@@ -44,8 +44,7 @@ class OpEdStore:
         with connection:
             cursor = connection.cursor()
             for article in articles:
-                cursor.execute(PostgreQueries['add_article'],(category.id,article.link,article.title,article.description,article.publication_date))
-
+                cursor.execute(PostgreQueries['add_article'],(category.id,article.link,article.title,article.description,article.publication_date,article.keywords,article.summary))
 
     def get_articles(self):
         pass
