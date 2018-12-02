@@ -3,6 +3,7 @@ import pika
 
 from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
+from archiver import Archiver
 
 TASK_PROCESSOR_QUEUE_NAME = 'newsparser'
 
@@ -19,6 +20,10 @@ def _handler(channel,method,properties,body):
                 print('Processing OpEd')
                 oped_manager = OpEdManager()
                 oped_manager.process()
+            elif message['command'] == 'archive':
+                print('Archiving content')
+                archiver = Archiver()
+                archiver.archive_webpage(message['url'],message['id'])
             else:
                 print("Command:{} is not supported".format(message.command))
             print('Processing completed successfully.')
