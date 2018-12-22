@@ -12,7 +12,6 @@ class FeedItem:
 
 class RssFeedFetcher:
     def get_feeds(self, url):
-        print(url)
         feeds_content = requests.get(url)
         xml = etree.XML(feeds_content.content)
         feeds = []
@@ -45,3 +44,15 @@ class HtmlFetcher:
         response = requests.get(url)
         content = BeautifulSoup(response.text,features="lxml")
         return content
+    
+    def get_images(self,raw_content):
+        image_tags = raw_content.find_all('img')
+        image_urls = [image_tag['src'] for image_tag in image_tags]
+        image_contents = []
+        for image_url in image_urls:
+            image_response = requests.get(image_url)
+            if (image_response.status_code==200):
+                image_contents.append(image_response.content)
+            else:
+                print("Failed to retrieve image at:{},got status:{}".format(image_url,image_response.status))
+        return image_contents

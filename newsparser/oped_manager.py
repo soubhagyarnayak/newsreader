@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from oped_store import OpEdStore
 from feed_fetcher import RssFeedFetcher, HtmlFetcher
 from text_analyzer import TextAnalyzer
@@ -9,7 +10,7 @@ class OpEdManager:
         parser = RssFeedFetcher()
         html_fetcher = HtmlFetcher()
         text_analyzer = TextAnalyzer()
-        for oped_category in oped_categories:
+        for oped_category in tqdm(oped_categories, total=len(oped_categories)):
             try:
                 articles = parser.get_feeds(oped_category.link)
                 for article in articles:
