@@ -24,6 +24,10 @@ def _handler(channel,method,properties,body):
                 print('Archiving content')
                 archiver = Archiver()
                 archiver.archive_webpage(message['url'],message['id'])
+            elif message['command'] == 'purgeHN':
+                print('Purging old hn entries')
+                hn = HackerNewsManager()
+                hn.purge()
             else:
                 print("Command:{} is not supported".format(message.command))
             print('Processing completed successfully.')
@@ -43,5 +47,9 @@ class TaskProcessor():
         print('Listening for messages')
         self.channel.start_consuming()
 
-tp = TaskProcessor()
-tp.start()
+try:
+    tp = TaskProcessor()
+    tp.start()
+except Exception as e:
+    print(e)
+    print(type(e))

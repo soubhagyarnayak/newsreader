@@ -9,3 +9,7 @@ class HackerNewsManager:
         for article in articles:
             store.add_article(article)
 
+    def purge(self):
+        store = HackerNewsStore()
+        store.purge()
+
