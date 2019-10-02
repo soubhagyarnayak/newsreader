@@ -22,11 +22,11 @@ class OdiaWikipediaProxy:
             data = data.replace('  ',' ')
             parts = data.split(u'\u0964') # devnagiri danda aka odia purna cheda
             sentences.extend(parts)
-        return sentences
+        return [sentence for sentence in sentences if len(sentence)>0]
 
 '''proxy = OdiaWikipediaProxy()
 #print(proxy.fetch_random_page().encode("utf-8"))
-with open('rand104.txt', 'w', encoding='utf-8') as f:
+with open('rand105.txt', 'w', encoding='utf-8') as f:
     sentences = proxy.fetch_random_page_sentences()
     for sentence in sentences:
         f.write(sentence)
