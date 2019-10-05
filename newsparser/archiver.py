@@ -24,10 +24,9 @@ class Archiver:
         self._archive(DharitriFetcher(),DHARITRI_DIR_PATH,date)
     
     def _archive(self,fetcher,parent_dir_path,date):
-        image_contents = fetcher.fetch(date)
         subdir = self.ensure_directory(parent_dir_path, date)
         page_num = 1
-        for image_content in image_contents:
+        for image_content in fetcher.fetch(date):
             filepath = os.path.join(subdir,"{}.jpg".format(page_num))
             with open(filepath,'wb') as file:
                 file.write(image_content)
@@ -42,6 +41,6 @@ class Archiver:
         return subdir
 
 '''archiver = Archiver()
-from datetime import datetime
-#archiver.archive_samaja(datetime.now())
-archiver.archive_dharitri(datetime.now())'''
+from datetime import datetime, timedelta
+archiver.archive_samaja(datetime.now() - timedelta(days=8))
+archiver.archive_dharitri(datetime.now() - timedelta(days=8))'''

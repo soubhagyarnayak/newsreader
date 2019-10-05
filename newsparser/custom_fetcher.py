@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 class SamajaFetcher:
     def fetch(self, date):
-        pages = []
+        print("Trying to fetch The Samaja for {}".format(date))
         date_part = date.strftime("%d%m%Y")
         url = "http://www.samajaepaper.in/epaperimages//{}//{}-md-ct-{}.jpg"
         page_num = 1
@@ -12,13 +12,13 @@ class SamajaFetcher:
             response = requests.get(url.format(date_part,date_part,page_num))
             if response.status_code == 404:
                 break
-            pages.append(response.content)
+            yield response.content
             page_num += 1
-        return pages
+        print("Fetched all the pages of The Samaja for {}".format(date))
 
 class DharitriFetcher:
     def fetch(self, date):
-        pages = []
+        print("Trying to fetch Dharitri for {}".format(date))
         bbsr_edition_url = self.find_bbsr_url(date)
         print(bbsr_edition_url)
         num_pages = self.find_num_pages(bbsr_edition_url)
@@ -26,8 +26,8 @@ class DharitriFetcher:
             response = requests.get(bbsr_edition_url+"/page/"+str(i+1))
             print_img = BeautifulSoup(response.text,features="lxml").find(id='print_img')
             response = requests.get(print_img['src'])
-            pages.append(response.content)
-        return pages
+            yield response.content
+        print("Fetched all the pages of Dharitri for {}".format(date))
 
     def find_bbsr_url(self,date):
         archive_url= "http://dharitriepaper.in/archive/{}".format(date.strftime("%Y-%m-%d"))
