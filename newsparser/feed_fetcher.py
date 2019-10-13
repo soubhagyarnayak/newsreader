@@ -42,6 +42,12 @@ class HtmlFetcher:
 
     def get_raw_content(self,url):
         response = requests.get(url)
+        print("Fetched {} and got status code:{}".format(url,response.status_code))
+        if response.status_code != 200:
+            import time
+            time.sleep(5) # retry after 5 secs
+            response = requests.get(url)
+            print("Fetched {} and got status code:{}".format(url,response.status_code))
         content = BeautifulSoup(response.text,features="lxml")
         return content
     
