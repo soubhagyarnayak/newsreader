@@ -13,15 +13,15 @@ class HackerNewsArticle:
 class HackerNewsParser:
     def parse_all(self):
         url_article_map = self.parse_page(HACKER_NEWS_URL)
+        yield url_article_map
         page_id = 2
         while True:
             print("{}:{}".format(page_id,len(url_article_map)))
             page_url_article_map = self.parse_page(HACKER_NEWS_URL+"/news?p="+str(page_id))
             if len(page_url_article_map) == 0:
                 break
-            url_article_map.update(page_url_article_map)
+            yield page_url_article_map
             page_id +=1
-        return url_article_map
 
     def parse_page(self, page_url):
         url_article_map = {}

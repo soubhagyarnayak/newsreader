@@ -4,10 +4,12 @@ from hacker_news_store import HackerNewsStore
 class HackerNewsManager:
     def process(self):
         parser = HackerNewsParser()
-        articles = parser.parse_all().values()
         store = HackerNewsStore()
-        for article in articles:
-            store.add_article(article)
+        parsedContent = parser.parse_all() 
+        for content in parsedContent:
+            articles = content.values()
+            for article in articles:
+                store.add_article(article)
 
     def purge(self):
         store = HackerNewsStore()
