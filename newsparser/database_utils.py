@@ -10,7 +10,8 @@ class DatabaseHelper:
             user = DATABASE_CONFIG['user']
             password = DATABASE_CONFIG['password']
             dbname = DATABASE_CONFIG['dbname']
-            connection = psycopg2.connect("dbname='{}' user='{}' password='{}'".format(dbname,user,password))
+            host = DATABASE_CONFIG['host']
+            connection = psycopg2.connect("host='{}' dbname='{}' user='{}' password='{}'".format(host,dbname,user,password))
         else:
             raise RuntimeError("The specified db type:{} is not supported".format(DATABASE_CONFIG['type']))
         return connection
