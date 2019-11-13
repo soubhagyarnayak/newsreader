@@ -5,6 +5,7 @@ import pika
 from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
 from archiver import Archiver
+from config import QUEUE_CONNECTION_STRING
 
 TASK_PROCESSOR_QUEUE_NAME = 'newsparser'
 
@@ -42,7 +43,8 @@ def _handler(channel,method,properties,body):
 
 class TaskProcessor():
     def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        parameters = pika.URLParameters(QUEUE_CONNECTION_STRING)
+        self.connection = pika.BlockingConnection(parameters)
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=TASK_PROCESSOR_QUEUE_NAME)
         self.channel.basic_consume(_handler,queue=TASK_PROCESSOR_QUEUE_NAME,no_ack=True)
