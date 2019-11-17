@@ -36,26 +36,33 @@ def _handler(channel,method,properties,body):
             else:
                 logger.error("Command:{} is not supported".format(message.command))
             logger.info('Processing completed successfully.')
-        except Exception as e:
-            print(e)
+        except Exception:
             logger.exception('Processing completed with exception.')
         
 
 class TaskProcessor():
     def __init__(self):
+        self.create_listener()
+
+    def start(self):
+        logger.info('Listening for messages')
+        while True:
+            try:
+                self.channel.start_consuming()
+            except pika.exceptions.ConnectionClosed:
+                logger.exception('Encountred exception from message queue')
+                self.create_listener()
+
+    def create_listener(self):
+        logger.info('Creating connection to message queue')
         parameters = pika.URLParameters(QUEUE_CONNECTION_STRING)
         self.connection = pika.BlockingConnection(parameters)
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=TASK_PROCESSOR_QUEUE_NAME)
         self.channel.basic_consume(_handler,queue=TASK_PROCESSOR_QUEUE_NAME,no_ack=True)
 
-    def start(self):
-        logger.info('Listening for messages')
-        self.channel.start_consuming()
-
 try:
     tp = TaskProcessor()
     tp.start()
 except Exception as e:
-    print(e)
-    print(type(e))
+    logger.exception('Encountered unhandled exception.')
