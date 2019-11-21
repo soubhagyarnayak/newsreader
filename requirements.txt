@@ -11,7 +11,7 @@ html2text==2018.1.9
 idna==2.7
 jmespath==0.9.3
 lxml==4.2.5
-numpy==1.15.4
+numpy==1.16.0
 pika==0.12.0
 Pillow==6.2.0
 psycopg2==2.7.5

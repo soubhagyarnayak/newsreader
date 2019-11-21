@@ -1,0 +1,20 @@
+FROM python:3.7-slim
+
+MAINTAINER Soubhagya R Nayak <soubhagya.r.nayak@gmail.com>
+
+#RUN apk update && apk add build-base postgresql-dev libffi-dev libcurl curl-dev
+
+RUN apt-get update && apt-get install apt-file -y && apt-file update
+RUN apt-get install -y libssl-dev libcurl4-openssl-dev gcc
+
+ENV INSTALL_PATH /bsawf
+RUN mkdir -p $INSTALL_PATH
+
+WORKDIR $INSTALL_PATH
+
+COPY requirements.txt requirements.txt
+RUN pip install --requirement requirements.txt
+
+COPY ./newsparser ./newsparser
+
+CMD ["python","./newsparser/task_processor.py"]
