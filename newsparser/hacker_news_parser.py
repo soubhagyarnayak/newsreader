@@ -1,6 +1,10 @@
+import logging
 from feed_fetcher import HtmlFetcher
 
 HACKER_NEWS_URL = "https://news.ycombinator.com/"
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class HackerNewsArticle:
     def __init__(self,id,link,title):
@@ -16,7 +20,7 @@ class HackerNewsParser:
         yield url_article_map
         page_id = 2
         while True:
-            print("{}:{}".format(page_id,len(url_article_map)))
+            logger.info("Parsing page with id:{} and length:{}".format(page_id,len(url_article_map)))
             page_url_article_map = self.parse_page(HACKER_NEWS_URL+"/news?p="+str(page_id))
             if len(page_url_article_map) == 0:
                 break

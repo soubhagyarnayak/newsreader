@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup
+import logging
 import requests
 from lxml import etree
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 class FeedItem:
     def __init__(self):
@@ -42,12 +46,12 @@ class HtmlFetcher:
 
     def get_raw_content(self,url):
         response = requests.get(url)
-        print("Fetched {} and got status code:{}".format(url,response.status_code))
+        logger.info("Fetched {} and got status code:{}".format(url,response.status_code))
         if response.status_code != 200:
             import time
             time.sleep(5) # retry after 5 secs
             response = requests.get(url)
-            print("Fetched {} and got status code:{}".format(url,response.status_code))
+            logger.info("Fetched {} and got status code:{}".format(url,response.status_code))
         content = BeautifulSoup(response.text,features="lxml")
         return content
     
@@ -60,5 +64,5 @@ class HtmlFetcher:
             if (image_response.status_code==200):
                 image_contents.append(image_response.content)
             else:
-                print("Failed to retrieve image at:{},got status:{}".format(image_url,image_response.status))
+                logger.info("Failed to retrieve image at:{},got status:{}".format(image_url,image_response.status))
         return image_contents
