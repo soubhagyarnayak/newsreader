@@ -59,7 +59,7 @@ class TaskProcessor():
         self.connection = pika.BlockingConnection(parameters)
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=TASK_PROCESSOR_QUEUE_NAME)
-        self.channel.basic_consume(_handler,queue=TASK_PROCESSOR_QUEUE_NAME,no_ack=True)
+        self.channel.basic_consume(queue=TASK_PROCESSOR_QUEUE_NAME,on_message_callback=_handler)
 
 try:
     tp = TaskProcessor()
