@@ -36,6 +36,7 @@ def _handler(channel,method,properties,body):
             else:
                 logger.error("Command:{} is not supported".format(message.command))
             logger.info('Processing completed successfully.')
+            channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             logger.exception('Processing completed with exception.')
         
