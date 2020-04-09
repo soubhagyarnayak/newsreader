@@ -56,7 +56,7 @@ class TaskProcessor():
 
     def create_listener(self):
         logger.info('Creating connection to message queue')
-        parameters = pika.URLParameters(QUEUE_CONNECTION_STRING)
+        parameters = pika.URLParameters(QUEUE_CONNECTION_STRING+'?heartbeat=600')
         self.connection = pika.BlockingConnection(parameters)
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=TASK_PROCESSOR_QUEUE_NAME)
