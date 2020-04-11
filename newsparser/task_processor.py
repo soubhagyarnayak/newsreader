@@ -1,6 +1,10 @@
-import json
 import logging
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S')
+import json
 import pika
+
 
 from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
@@ -10,7 +14,6 @@ from config import QUEUE_CONNECTION_STRING
 TASK_PROCESSOR_QUEUE_NAME = 'newsparser'
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 def _handler(channel,method,properties,body):
         try:
