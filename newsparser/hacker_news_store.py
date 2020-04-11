@@ -1,5 +1,11 @@
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
 import datetime
 import psycopg2
+import tenacity
 
 from config import DATABASE_CONFIG
 from database_utils import DatabaseHelper
@@ -12,7 +18,12 @@ PostgreQueries = {
     "get_n_articles":"SELECT TOP %d ARTICLES FROM HackerNewsArticles WHERE !IsRemoved AND !IsRead ORDER BY CreateTime ASC", 
 }
 
+logger = logging.getLogger(__name__)
+
 class HackerNewsStore:
+
+    @tenacity.retry(stop=tenacity.stop_after_attempt(5),wait=tenacity.wait_random(min=1,max=2),
+        before_sleep=tenacity.before_sleep_log(logger,logging.DEBUG))
     def add_article(self,article):
         connection = DatabaseHelper.get_connection()
         with connection:
@@ -20,8 +31,7 @@ class HackerNewsStore:
             try:
                 cursor.execute(self._get_query('add_article'), (article.id,article.link,article.title))
             except psycopg2.IntegrityError as e:
-                print(e)
-                print(e.diag.message_primary)
+                logger.info(e)
     
     def purge(self):
         connection = DatabaseHelper.get_connection()
