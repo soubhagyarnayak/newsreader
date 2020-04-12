@@ -1,10 +1,14 @@
-from bs4 import BeautifulSoup
 import logging
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    level=logging.INFO,
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
+from bs4 import BeautifulSoup
 import requests
+import tenacity
 from lxml import etree
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 class FeedItem:
     def __init__(self):
@@ -44,14 +48,13 @@ class HtmlFetcher:
             paragraph_texts.append(paragraph.text)
         return paragraph_texts
 
+    @tenacity.retry(stop=tenacity.stop_after_attempt(5),wait=tenacity.wait_random(min=1,max=5),
+        before_sleep=tenacity.before_sleep_log(logger,logging.DEBUG))
     def get_raw_content(self,url):
         response = requests.get(url)
         logger.info("Fetched {} and got status code:{}".format(url,response.status_code))
         if response.status_code != 200:
-            import time
-            time.sleep(5) # retry after 5 secs
-            response = requests.get(url)
-            logger.info("Fetched {} and got status code:{}".format(url,response.status_code))
+            raise Exception("Fetched {} and got status code:{}".format(url,response.status_code))
         content = BeautifulSoup(response.text,features="lxml")
         return content
     
