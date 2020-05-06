@@ -10,12 +10,13 @@ from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
 from archiver import Archiver
 from config import QUEUE_CONNECTION_STRING
+from pika_consumer import PikaConsumer
 
 TASK_PROCESSOR_QUEUE_NAME = 'newsparser'
 
 logger = logging.getLogger(__name__)
 
-def _handler(channel,method,properties,body):
+def _handler(body):
         try:
             body = body.decode('utf8').replace("'", '"')
             logger.info('Processing message:'+body)
@@ -39,7 +40,6 @@ def _handler(channel,method,properties,body):
             else:
                 logger.error("Command:{} is not supported".format(message.command))
             logger.info('Processing completed successfully.')
-            channel.basic_ack(delivery_tag=method.delivery_tag)
         except Exception:
             logger.exception('Processing completed with exception.')
         
@@ -52,18 +52,13 @@ class TaskProcessor():
         logger.info('Listening for messages')
         while True:
             try:
-                self.channel.start_consuming()
-            except pika.exceptions.ConnectionClosed:
-                logger.exception('Encountred exception from message queue')
-                self.create_listener()
+                self.listener.run()
+            except KeyboardInterrupt:
+                self.listener.stop()
+                break
 
     def create_listener(self):
-        logger.info('Creating connection to message queue')
-        parameters = pika.URLParameters(QUEUE_CONNECTION_STRING+'?heartbeat=600')
-        self.connection = pika.BlockingConnection(parameters)
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=TASK_PROCESSOR_QUEUE_NAME)
-        self.channel.basic_consume(queue=TASK_PROCESSOR_QUEUE_NAME,on_message_callback=_handler)
+        self.listener = PikaConsumer(_handler)
 
 try:
     tp = TaskProcessor()
