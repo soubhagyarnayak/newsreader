@@ -4,6 +4,7 @@ from feed_fetcher import RssFeedFetcher, HtmlFetcher
 from text_analyzer import TextAnalyzer
 from custom_feed_fetcher import ToiOpinionFetcher
 
+
 class OpEdManager:
     def __init__(self):
         self.html_fetcher = HtmlFetcher()
@@ -16,8 +17,8 @@ class OpEdManager:
         toi_oped_parser = ToiOpinionFetcher()
         for oped_category in tqdm(oped_categories, total=len(oped_categories)):
             try:
-                if(oped_category.id==1):
-                    articles = toi_oped_parser.get_feeds('https://timesofindia.indiatimes.com/blogs/')
+                if(oped_category.id == 1):
+                    articles = toi_oped_parser.get_feeds('https://timesofindia.indiatimes.com/blogs/')  # noqa: E501
                     self.process_articles(oped_category, articles)
                 else:
                     articles = parser.get_feeds(oped_category.link)
@@ -27,7 +28,7 @@ class OpEdManager:
                 print(e)
                 print(oped_category)
 
-    def process_articles(self,oped_category,articles):
+    def process_articles(self, oped_category, articles):
         for article in articles:
             try:
                 paragraphs = self.html_fetcher.get_paragraphs(article.link)
@@ -35,9 +36,7 @@ class OpEdManager:
                 article.keywords = self.text_analyzer.get_keywords(text)
                 article.summary = self.text_analyzer.get_summary(text)
             except Exception as e:
-                print("Encountered exception while fetching and processing article.")
+                print("Encountered exception while fetching and processing article.")  # noqa: E501
                 print(e)
                 print(article)
-        self.oped_store.add_articles(oped_category,articles)
-
-
+        self.oped_store.add_articles(oped_category, articles)

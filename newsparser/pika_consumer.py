@@ -1,7 +1,7 @@
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     level=logging.INFO,
-                    datefmt='%Y-%m-%d %H:%M:%S')
+                    datefmt='%Y-%m-%d %H:%M:%S')  # noqa
 
 import functools
 import pika
@@ -14,8 +14,9 @@ EXCHANGE_NAME = ''
 logger = logging.getLogger(__name__)
 
 """
-Please refer https://github.com/pika/pika/blob/master/examples/asynchronous_consumer_example.py
+Please refer https://github.com/pika/pika/blob/master/examples/asynchronous_consumer_example.py  # noqa: E501
 """
+
 
 class PikaConsumer():
     def __init__(self, handler):
@@ -30,7 +31,7 @@ class PikaConsumer():
     def connect(self):
         logger.info('Creating connection to message queue')
         return pika.SelectConnection(
-            parameters=pika.URLParameters(QUEUE_CONNECTION_STRING+'?heartbeat=600'),
+            parameters=pika.URLParameters(QUEUE_CONNECTION_STRING+'?heartbeat=600'),  # noqa: E501
             on_open_callback=self.on_connection_open,
             on_open_error_callback=self.on_connection_open_error,
             on_close_callback=self.on_connection_closed)
@@ -43,7 +44,7 @@ class PikaConsumer():
         logger.info('Creating a new channel')
         self._connection.channel(on_open_callback=self.on_channel_open)
 
-    def on_channel_open(self,channel):
+    def on_channel_open(self, channel):
         logger.info('Channel opened')
         self._channel = channel
         self.add_on_channel_close_callback()
@@ -97,7 +98,7 @@ class PikaConsumer():
 
     def on_cancelok(self, _unused_frame, userdata):
         self._consuming = False
-        logger.info('RabbitMQ acknowledged the cancellation of the consumer: %s', userdata)
+        logger.info('RabbitMQ acknowledged the cancellation of the consumer: %s', userdata)  # noqa: E501
         self.close_channel()
 
     def on_connection_closed(self, _unused_connection, reason):
@@ -105,7 +106,7 @@ class PikaConsumer():
         if self._closing:
             self._connection.ioloop.stop()
         else:
-            logger.warning('Connection closed, reconnect necessary: %s', reason)
+            logger.warning('Connection closed, reconnect necessary: %s', reason)  # noqa: E501
             self.reconnect()
 
     def setup_exchange(self, exchange_name):
@@ -125,11 +126,11 @@ class PikaConsumer():
 
     def setup_queue(self, queue_name):
         logger.info('Declaring queue %s', queue_name)
-        self._channel.queue_declare(queue=queue_name, callback=self.on_queue_declareok)
+        self._channel.queue_declare(queue=queue_name, callback=self.on_queue_declareok)  # noqa: E501
 
     def on_queue_declareok(self, _unused_frame):
-        logger.info('Binding %s to %s with %s', EXCHANGE_NAME, TASK_PROCESSOR_QUEUE_NAME,
-                    TASK_PROCESSOR_QUEUE_NAME)
+        logger.info('Binding %s to %s with %s', EXCHANGE_NAME,
+                    TASK_PROCESSOR_QUEUE_NAME, TASK_PROCESSOR_QUEUE_NAME)
         self._channel.queue_bind(
             TASK_PROCESSOR_QUEUE_NAME,
             EXCHANGE_NAME,
@@ -170,14 +171,3 @@ class PikaConsumer():
     def run(self):
         self._connection = self.connect()
         self._connection.ioloop.start()
-
-    def stop(self):
-        if not self._closing:
-            self._closing = True
-            logger.info('Stopping')
-            if self._consuming:
-                self.stop_consuming()
-                self._connection.ioloop.start()
-            else:
-                self._connection.ioloop.stop()
-            logger.info('Stopped')

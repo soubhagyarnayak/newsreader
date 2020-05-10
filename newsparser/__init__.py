@@ -1,1 +1,1 @@
-from .feed_manager import FeedManager
+from .feed_manager import FeedManager  # noqa: F401

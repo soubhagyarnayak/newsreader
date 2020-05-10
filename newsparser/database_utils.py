@@ -2,6 +2,7 @@ import psycopg2
 
 from config import DATABASE_CONFIG
 
+
 class DatabaseHelper:
     @staticmethod
     def get_connection():
@@ -11,7 +12,7 @@ class DatabaseHelper:
             password = DATABASE_CONFIG['password']
             dbname = DATABASE_CONFIG['dbname']
             host = DATABASE_CONFIG['host']
-            connection = psycopg2.connect("host='{}' dbname='{}' user='{}' password='{}'".format(host,dbname,user,password))
+            connection = psycopg2.connect("host='{}' dbname='{}' user='{}' password='{}'".format(host, dbname, user, password))  # noqa: E501
         else:
-            raise RuntimeError("The specified db type:{} is not supported".format(DATABASE_CONFIG['type']))
+            raise RuntimeError("The specified db type:{} is not supported".format(DATABASE_CONFIG['type']))  # noqa: E501
         return connection
