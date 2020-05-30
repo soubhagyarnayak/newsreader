@@ -3,6 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+from odia_dictionary import OdiaDictionary
+
 
 class OdiaWikipediaProxy:
     def fetch_random_page_paragraphs(self):
@@ -25,12 +27,19 @@ class OdiaWikipediaProxy:
             sentences.extend(parts)
         return [sentence for sentence in sentences if len(sentence) > 0]
 
+    def populate_dictionary(self):
+        sentences = self.fetch_random_page_sentences()
+        with OdiaDictionary() as odia_dict:
+            stats = odia_dict.getStats()
+            print(stats)
+            for sentence in sentences:
+                words = sentence.split()
+                for word in words:
+                    odia_dict.putMeaningIfMissing(word)
+            stats = odia_dict.getStats()
+            print(stats)
 
-'''proxy = OdiaWikipediaProxy()
-#print(proxy.fetch_random_page().encode("utf-8"))
-with open('rand105.txt', 'w', encoding='utf-8') as f:
-    sentences = proxy.fetch_random_page_sentences()
-    for sentence in sentences:
-        f.write(sentence)
-        f.write("\n")
-'''
+
+# proxy = OdiaWikipediaProxy()
+# print(proxy.fetch_random_page().encode("utf-8"))
+# proxy.populate_dictionary()
