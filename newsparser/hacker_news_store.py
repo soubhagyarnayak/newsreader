@@ -42,6 +42,7 @@ class HackerNewsStore:
             lastCreateTime = datetime.date.today() - datetime.timedelta(days=15)  # noqa: E501
             cursor.execute(self._get_query('purge_removed_articles'),
                            (lastCreateTime,))
+            logger.info(f"deleted rows:{cursor.rowcount}")
 
     def _get_query(self, query_id):
         query = None
