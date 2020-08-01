@@ -5,6 +5,7 @@ botocore==1.15.37
 bz2file==0.98
 certifi==2020.4.5.1
 chardet==3.0.4
+Cython==0.29.21
 docutils==0.16
 entrypoints==0.3
 flake8==3.7.9
