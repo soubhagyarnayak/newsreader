@@ -17,7 +17,7 @@ lxml==4.6.2
 mccabe==0.6.1
 numpy==1.18.2
 pika==1.1.0
-Pillow==7.1.1
+Pillow==8.1.1
 psycopg2==2.8.4
 pycodestyle==2.5.0
 pycurl==7.43.0.5
