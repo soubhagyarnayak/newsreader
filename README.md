@@ -9,4 +9,16 @@ apt-get install -y libpq-dev # to avoid pg_config error
 apt-get install -y libcurl4-openssl-dev libssl-dev # to avoid curl-config error  
 pip install -r requirements.txt  
 
+### MacOS
+brew install postgresql
+
+brew install curl-openssl
+echo 'export PATH="/usr/local/opt/curl/bin:$PATH"' >> ~/.zshrc
+export LDFLAGS="-L/usr/local/opt/curl/lib"     
+export CPPFLAGS="-I/usr/local/opt/curl/include"
+
+brew reinstall openssl@1.1
+export LDFLAGS="-L/usr/local/opt/openssl/lib"                                  
+export CPPFLAGS="-I/usr/local/opt/openssl/include"
+
 
