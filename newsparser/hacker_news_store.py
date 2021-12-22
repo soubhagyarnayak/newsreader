@@ -39,7 +39,7 @@ class HackerNewsStore:
         connection = DatabaseHelper.get_connection()
         with connection:
             cursor = connection.cursor()
-            lastCreateTime = datetime.date.today() - datetime.timedelta(days=15)  # noqa: E501
+            lastCreateTime = datetime.date.today() - datetime.timedelta(days=10)  # noqa: E501
             cursor.execute(self._get_query('purge_removed_articles'),
                            (lastCreateTime,))
             logger.info(f"deleted rows:{cursor.rowcount}")
