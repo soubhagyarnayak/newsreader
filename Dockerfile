@@ -13,7 +13,7 @@ RUN pip install --user psycopg2-binary
 
 COPY ./newsparser /root/.local/newsparser
 
-FROM python:3.7-slim
+FROM python:3.8-slim
 
 COPY --from=devo /root/.local /root/.local
 
