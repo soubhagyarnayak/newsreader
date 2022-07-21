@@ -1,4 +1,4 @@
-FROM python:3.7-slim as devo
+FROM python:3.8-slim as devo
 
 MAINTAINER Soubhagya R Nayak <soubhagya.r.nayak@gmail.com>
 
