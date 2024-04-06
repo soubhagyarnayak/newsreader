@@ -1,14 +1,14 @@
 from tqdm import tqdm
 from oped_store import OpEdStore
 from feed_fetcher import RssFeedFetcher, HtmlFetcher
-from text_analyzer import TextAnalyzer
+#from text_analyzer import TextAnalyzer
 from custom_feed_fetcher import ToiOpinionFetcher
 
 
 class OpEdManager:
     def __init__(self):
         self.html_fetcher = HtmlFetcher()
-        self.text_analyzer = TextAnalyzer()
+        #self.text_analyzer = TextAnalyzer()
         self.oped_store = OpEdStore()
 
     def process(self):
@@ -33,8 +33,9 @@ class OpEdManager:
             try:
                 paragraphs = self.html_fetcher.get_paragraphs(article.link)
                 text = ' '.join(paragraphs)
-                article.keywords = self.text_analyzer.get_keywords(text)
-                article.summary = self.text_analyzer.get_summary(text)
+                #TODO(srn): Find a suitable replacement of gensim summarizer
+                #article.keywords = self.text_analyzer.get_keywords(text)
+                #article.summary = self.text_analyzer.get_summary(text)
             except Exception as e:
                 print("Encountered exception while fetching and processing article.")  # noqa: E501
                 print(e)
