@@ -16,6 +16,6 @@ six==1.16.0
 smart-open==5.1.0
 soupsieve==2.2.1
 tenacity==6.1.0
-tqdm==4.45.0
+tqdm==4.66.3
 urllib3==1.26.18
 wptools==0.4.17
