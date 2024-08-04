@@ -53,7 +53,7 @@ class HtmlFetcher:
 
     @tenacity.retry(stop=tenacity.stop_after_attempt(5),
                     wait=tenacity.wait_random(min=1, max=5),
-                    before_sleep=tenacity.before_sleep_log(logger, logging.DEBUG))  # noqa: E501
+                    before_sleep=tenacity.before_sleep_log(logger, logging.INFO))  # noqa: E501
     def get_raw_content(self, url):
         response = requests.get(url)
         logger.info("Fetched {} and got status code:{}".format(url, response.status_code))  # noqa: E501
