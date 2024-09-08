@@ -28,6 +28,8 @@ class HackerNewsParser:
             try:
                 logger.info("Parsing page with id:{} and length:{}".format(page_id, len(url_article_map)))  # noqa: E501
                 page_url_article_map = self.parse_page(HACKER_NEWS_URL+"/news?p="+str(page_id))  # noqa: E501
+                if not page_url_article_map:
+                    break # HN returns empty page at times
                 yield page_url_article_map
                 page_id += 1
             except Exception:
