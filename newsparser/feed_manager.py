@@ -1,4 +1,5 @@
 import sqlite3
+from dataclasses import dataclass
 from sqlite3 import Error
 
 import newsparser.config as config
@@ -22,9 +23,14 @@ PostgreQueries = {
 }
 
 
+@dataclass
 class Feed:
+    id: int
+    url: str
+    description: str
+
     def __str__(self):
-        return "rowid:{0},url:{1},description:{2}".format(self.id, self.url, self.description)  # noqa: E501
+        return f"rowid:{self.id},url:{self.url},description:{self.description}"
 
 
 class FeedEntry:
@@ -43,26 +49,16 @@ class FeedManager:
         with connection:
             cursor = connection.cursor()
             # TODO: make it atomic
-            cursor.execute(
-                self._get_query('delete_feed_entries'), (url,))
+            cursor.execute(self._get_query('delete_feed_entries'), (url,))
             cursor.execute(self._get_query('delete_feeds'), (url,))
 
     def get_feeds(self):
         connection = self._get_connection()
-        feeds = []
         with connection:
             cursor = connection.cursor()
             cursor.execute("SELECT ROWID,URL,Description FROM Feeds")
-            while True:
-                row = cursor.fetchone()
-                if row is None:
-                    break
-                feed = Feed()
-                feed.id = row[0]
-                feed.url = row[1]
-                feed.description = row[2]
-                feeds.append(feed)
-        return feeds
+            rows = cursor.fetchall()
+        return [Feed(id=row[0], url=row[1], description=row[2]) for row in rows]
 
     def add_entries_to_feed(self, feed_id, entries):
         pass
@@ -84,12 +80,13 @@ class FeedManager:
                 connection = sqlite3.connect(config.DATABASE_CONFIG['dbname'])
             elif config.DATABASE_CONFIG['type'] == 'postgre':
                 import psycopg2
-                user = config.DATABASE_CONFIG['user']
-                password = config.DATABASE_CONFIG['password']
-                dbname = config.DATABASE_CONFIG['dbname']
-                connection = psycopg2.connect("dbname='{}' user='{}' password='{}'".format(dbname, user, password))  # noqa: E501
+                connection = psycopg2.connect(
+                    dbname=config.DATABASE_CONFIG['dbname'],
+                    user=config.DATABASE_CONFIG['user'],
+                    password=config.DATABASE_CONFIG['password'],
+                )
             else:
-                raise RuntimeError("The specified db type:{} is not supported".format(config.DATABASE_CONFIG['type']))  # noqa: E501
+                raise RuntimeError(f"The specified db type:{config.DATABASE_CONFIG['type']} is not supported")
         except Error as e:
             print(e)
         return connection
@@ -102,7 +99,7 @@ class FeedManager:
             elif config.DATABASE_CONFIG['type'] == 'postgre':
                 query = PostgreQueries[query_id]
             else:
-                raise RuntimeError("The specified db type:{} is not supported".format(config.DATABASE_CONFIG['type']))  # noqa: E501
+                raise RuntimeError(f"The specified db type:{config.DATABASE_CONFIG['type']} is not supported")
         except Error as e:
             print(e)
         return query

@@ -23,21 +23,18 @@ class OdiaWikipediaProxy:
             data = re.sub(r'\([^)]*\)', '', paragraph.text)  # remove anything between () including brackets  # noqa: E501
             data = re.sub(r'\[[^]]*\]', '', data)  # remove anything between [] including brackets  # noqa: E501
             data = data.replace('  ', ' ')
-            parts = data.split(u'\u0964')  # devnagiri danda aka odia purna cheda  # noqa: E501
+            parts = data.split(u'\u0964')  # devnagiri danda aka odia purna cheda
             sentences.extend(parts)
         return [sentence for sentence in sentences if len(sentence) > 0]
 
     def populate_dictionary(self):
         sentences = self.fetch_random_page_sentences()
         with OdiaDictionary() as odia_dict:
-            stats = odia_dict.getStats()
-            print(stats)
+            print(odia_dict.get_stats())
             for sentence in sentences:
-                words = sentence.split()
-                for word in words:
-                    odia_dict.putMeaningIfMissing(word)
-            stats = odia_dict.getStats()
-            print(stats)
+                for word in sentence.split():
+                    odia_dict.put_meaning_if_missing(word)
+            print(odia_dict.get_stats())
 
 
 # proxy = OdiaWikipediaProxy()

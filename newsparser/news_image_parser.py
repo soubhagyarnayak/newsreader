@@ -106,16 +106,16 @@ class ImageUtility:
         return [src_image.crop(box) for box in boxes]
 
     def load_bitmap(self, src_image, convert_to_black_white):
-        cannonical_image = src_image
+        canonical_image = src_image
         if convert_to_black_white:
-            cannonical_image = self.convert_to_black_white(src_image)
-        return (cannonical_image.load(), cannonical_image.size[0], cannonical_image.size[1])  # noqa: E501
+            canonical_image = self.convert_to_black_white(src_image)
+        return (canonical_image.load(), canonical_image.size[0], canonical_image.size[1])
 
     def convert_to_black_white(self, src_image):
         gray_image = src_image.convert('L')
         return gray_image.point(lambda x: 0 if x < 128 else 255, '1')
 
-    def process(self, image_src_path, image_dest_dir_path, convert_to_black_white):  # noqa: E501
+    def process(self, image_src_path, image_dest_dir_path, convert_to_black_white):
         image = Image.open(image_src_path)
         extension = os.path.splitext(os.path.split(image_src_path)[-1])[1]
         image = self.trim(image, convert_to_black_white)
@@ -123,9 +123,9 @@ class ImageUtility:
         final_images = []
         for image in images:
             final_images.extend(self.split_y(image, True))
-        for i in range(len(final_images)):
-            path = os.path.join(image_dest_dir_path, 'trimmed_{}{}'.format(i, extension))  # noqa: E501
-            final_images[i].save(path)
+        for i, final_image in enumerate(final_images):
+            path = os.path.join(image_dest_dir_path, f'trimmed_{i}{extension}')
+            final_image.save(path)
 
 
 '''tk = ImageUtility()

@@ -17,25 +17,25 @@ class OdiaDictionary:
     def __exit__(self, exc_type, exc_value, traceback):
         self.db_conn.close()
 
-    def getMeaning(self, word):
+    def get_meaning(self, word):
         pass
 
-    def getStats(self):
-        sqlText = '''SELECT COUNT(*) FROM OdiaDictionary'''
+    def get_stats(self):
+        sql = 'SELECT COUNT(*) FROM OdiaDictionary'
         cursor = self.db_conn.cursor()
-        cursor.execute(sqlText)
+        cursor.execute(sql)
         result = cursor.fetchone()
         return result[0]
 
-    def putMeaningIfMissing(self, word, meaning='', type=''):
-        sqlText = '''INSERT OR IGNORE INTO OdiaDictionary VALUES (?,?,?)'''
+    def put_meaning_if_missing(self, word, meaning='', word_type=''):
+        sql = 'INSERT OR IGNORE INTO OdiaDictionary VALUES (?,?,?)'
         cursor = self.db_conn.cursor()
-        cursor.execute(sqlText, (word, meaning, type))
+        cursor.execute(sql, (word, meaning, word_type))
         self.db_conn.commit()
 
-    def createTable(self):
+    def create_table(self):
         cursor = self.db_conn.cursor()
-        sqlText = '''CREATE TABLE OdiaDictionary (word text PRIMARY KEY,
+        sql = '''CREATE TABLE OdiaDictionary (word text PRIMARY KEY,
          meaning text, type text)'''
-        cursor.execute(sqlText)
+        cursor.execute(sql)
         self.db_conn.commit()

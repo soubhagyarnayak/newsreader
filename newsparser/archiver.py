@@ -10,8 +10,7 @@ DHARITRI_DIR_PATH = "dharitri"
 
 class Archiver:
     def archive_webpage(self, url, directory):
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        os.makedirs(directory, exist_ok=True)
         filepath = os.path.join(directory, MAIN_FILE_NAME)
         html_fetcher = HtmlFetcher()
         html_content = html_fetcher.get_raw_content(url)
@@ -26,19 +25,15 @@ class Archiver:
 
     def _archive(self, fetcher, parent_dir_path, date):
         subdir = self.ensure_directory(parent_dir_path, date)
-        page_num = 1
-        for image_content in fetcher.fetch(date):
-            filepath = os.path.join(subdir, "{}.jpg".format(page_num))
+        for page_num, image_content in enumerate(fetcher.fetch(date), start=1):
+            filepath = os.path.join(subdir, f"{page_num}.jpg")
             with open(filepath, 'wb') as file:
                 file.write(image_content)
-            page_num += 1
 
     def ensure_directory(self, parent, date):
-        if not os.path.exists(parent):
-            os.makedirs(parent)
+        os.makedirs(parent, exist_ok=True)
         subdir = os.path.join(parent, date.strftime("%d%m%Y"))
-        if not os.path.exists(subdir):
-            os.makedirs(subdir)
+        os.makedirs(subdir, exist_ok=True)
         return subdir
 
 

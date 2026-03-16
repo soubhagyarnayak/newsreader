@@ -4,7 +4,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')  # noqa
 import json
 
-
 from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
 from archiver import Archiver
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 def _handler(body):
     try:
         body = body.decode('utf8').replace("'", '"')
-        logger.info('Processing message:'+body)
+        logger.info(f'Processing message:{body}')
         message = json.loads(body)
         if message['command'] == 'processHN':
             logger.info('Processing HN')
@@ -37,15 +36,15 @@ def _handler(body):
             hn = HackerNewsManager()
             hn.purge()
         else:
-            logger.error("Command:{} is not supported".format(message.command))
+            logger.error(f"Command:{message['command']} is not supported")
         logger.info('Processing completed successfully.')
     except Exception:
         logger.exception('Processing completed with exception.')
 
 
-class TaskProcessor():
+class TaskProcessor:
     def __init__(self):
-        self.create_listener()
+        self.listener = PikaConsumer(_handler)
 
     def start(self):
         logger.info('Listening for messages')
@@ -55,9 +54,6 @@ class TaskProcessor():
             except KeyboardInterrupt:
                 self.listener.stop()
                 break
-
-    def create_listener(self):
-        self.listener = PikaConsumer(_handler)
 
 
 try:

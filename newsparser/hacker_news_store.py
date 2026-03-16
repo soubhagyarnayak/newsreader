@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class HackerNewsStore:
     @tenacity.retry(stop=tenacity.stop_after_attempt(5),
                     wait=tenacity.wait_random(min=1, max=2),
-                    before_sleep=tenacity.before_sleep_log(logger, logging.DEBUG))  # noqa: E501
+                    before_sleep=tenacity.before_sleep_log(logger, logging.DEBUG))
     def add_article(self, article):
         connection = DatabaseHelper.get_connection()
         with connection:
@@ -39,15 +39,11 @@ class HackerNewsStore:
         connection = DatabaseHelper.get_connection()
         with connection:
             cursor = connection.cursor()
-            lastCreateTime = datetime.date.today() - datetime.timedelta(days=10)  # noqa: E501
-            cursor.execute(self._get_query('purge_removed_articles'),
-                           (lastCreateTime,))
+            last_create_time = datetime.date.today() - datetime.timedelta(days=10)
+            cursor.execute(self._get_query('purge_removed_articles'), (last_create_time,))
             logger.info(f"deleted rows:{cursor.rowcount}")
 
     def _get_query(self, query_id):
-        query = None
         if DATABASE_CONFIG['type'] == 'postgre':
-            query = PostgreQueries[query_id]
-        else:
-            raise RuntimeError("The specified db type:{} is not supported".format(DATABASE_CONFIG['type']))  # noqa: E501
-        return query
+            return PostgreQueries[query_id]
+        raise RuntimeError(f"The specified db type:{DATABASE_CONFIG['type']} is not supported")

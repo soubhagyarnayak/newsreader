@@ -6,10 +6,9 @@ class HackerNewsManager:
     def process(self):
         parser = HackerNewsParser()
         store = HackerNewsStore()
-        parsedContent = parser.parse_all()
-        for content in parsedContent:
-            articles = content.values()
-            for article in articles:
+        parsed_content = parser.parse_all()
+        for article_map in parsed_content:
+            for article in article_map.values():
                 store.add_article(article)
 
     def purge(self):
