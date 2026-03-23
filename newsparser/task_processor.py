@@ -1,4 +1,6 @@
 import logging
+
+from newsparser.custom_fetcher import SambadaFetcher, TesseractTextExtractor
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     level=logging.INFO,
                     datefmt='%Y-%m-%d %H:%M:%S')  # noqa
@@ -35,6 +37,15 @@ def _handler(body):
             logger.info('Purging old hn entries')
             hn = HackerNewsManager()
             hn.purge()
+        elif message['command'] == 'fetchNews':
+            logger.info(f"Fetching news for newspaper: {message['newspaper']}")
+            newspaper = message['newspaper']
+            if newspaper == 'sambada':
+                sambda_fetcher = SambadaFetcher()
+                sambda_fetcher.process(message['date'], extractor=TesseractTextExtractor())
+            else:
+                logger.error(f"Newspaper:{newspaper} is not supported")
+
         else:
             logger.error(f"Command:{message['command']} is not supported")
         logger.info('Processing completed successfully.')

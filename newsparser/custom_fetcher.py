@@ -1,5 +1,53 @@
+import base64
+import datetime
+import io
+import uuid
+from abc import ABC, abstractmethod
+
+import anthropic
 import requests
 from bs4 import BeautifulSoup
+from PIL import Image
+
+from newsparser.news_image_parser import ImageUtility
+
+
+class TextExtractor(ABC):
+    @abstractmethod
+    def extract(self, image: Image.Image) -> str:
+        pass
+
+
+class ClaudeTextExtractor(TextExtractor):
+    def __init__(self):
+        self._client = anthropic.Anthropic()
+
+    def extract(self, image: Image.Image) -> str:
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        b64 = base64.standard_b64encode(buf.getvalue()).decode()
+        response = self._client.messages.create(
+            model="claude-opus-4-6",
+            max_tokens=4096,
+            messages=[{
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": b64}},
+                    {"type": "text", "text": "Extract all text from this newspaper page image."},
+                ],
+            }],
+        )
+        return response.content[0].text
+
+
+class TesseractTextExtractor(TextExtractor):
+    def __init__(self, lang="ori"):
+        import pytesseract
+        self._pytesseract = pytesseract
+        self._lang = lang
+
+    def extract(self, image: Image.Image) -> str:
+        return self._pytesseract.image_to_string(image, lang=self._lang)
 
 
 class SamajaFetcher:
@@ -47,5 +95,37 @@ class DharitriFetcher:
 
 
 class SambadaFetcher:
+    def process(self, date, extractor: TextExtractor = None):
+        if extractor is None:
+            extractor = ClaudeTextExtractor()
+        for img_bytes in self.fetch(date):
+            image = Image.open(io.BytesIO(img_bytes))
+            trimmed_image = ImageUtility().trim(image, True)
+
+            img_filename = f"{uuid.uuid4()}.png"
+            trimmed_image.save(img_filename)
+            print(f"Saved trimmed image: {img_filename}")
+
+            text = extractor.extract(trimmed_image)
+            print(text)
+
+            text_filename = f"{uuid.uuid4()}.txt"
+            with open(text_filename, "w", encoding="utf-8") as f:
+                f.write(text)
+            print(f"Saved extracted text: {text_filename}")
+
     def fetch(self, date):
-        pass
+        if isinstance(date, str):
+            date = datetime.date.fromisoformat(date)
+        print(f"Trying to fetch Sambada for {date}")
+        date_part = date.strftime("%d%m%Y")
+        url = "https://sambadepaper.com/epaperimages//{}//{}-md-km-{}.jpg"
+        page_num = 1
+        while True:
+            print(f"trying to fetch page:{page_num}...")
+            response = requests.get(url.format(date_part, date_part, page_num))
+            if response.status_code == 404:
+                break
+            yield response.content
+            page_num += 1
+        print(f"Fetched all the pages of Sambada for {date}")
