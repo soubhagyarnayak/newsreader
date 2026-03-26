@@ -1,11 +1,11 @@
 import logging
 
-from newsparser.custom_fetcher import SambadaFetcher, TesseractTextExtractor
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                     level=logging.INFO,
                     datefmt='%Y-%m-%d %H:%M:%S')  # noqa
 import json
 
+from custom_fetcher import SambadaFetcher, TesseractTextExtractor
 from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
 from archiver import Archiver

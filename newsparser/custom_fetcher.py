@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 from PIL import Image
 
-from newsparser.news_image_parser import ImageUtility
+from news_image_parser import ImageUtility
 
 
 class TextExtractor(ABC):

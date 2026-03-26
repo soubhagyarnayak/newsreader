@@ -40,6 +40,8 @@ class HackerNewsParser:
         url_article_map = {}
         fetcher = HtmlFetcher()
         page_content = fetcher.get_raw_content(page_url)
+        if not page_content:
+            return url_article_map
         articles = page_content.find_all("tr", class_="athing")
         for article in articles:
             article_id = article.get("id")

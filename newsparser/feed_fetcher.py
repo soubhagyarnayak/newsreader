@@ -55,13 +55,16 @@ class HtmlFetcher:
         content = BeautifulSoup(response.text, features="lxml")
         return [p.text for p in content.find_all('p')]
 
-    @tenacity.retry(stop=tenacity.stop_after_attempt(5),
-                    wait=tenacity.wait_random(min=1, max=5),
+    @tenacity.retry(stop=tenacity.stop_after_attempt(10),
+                    wait=tenacity.wait_exponential(multiplier=1, min=2, max=60),
                     before_sleep=tenacity.before_sleep_log(logger, logging.INFO))
     def get_raw_content(self, url):
         response = requests.get(url)
         logger.info(f"Fetched {url} and got status code:{response.status_code}")
+        if response.status_code == 404:
+            return None
         if response.status_code != 200:
+            logger.info(f"Failed to retrieve content at:{url},got headers:{response.headers}")
             raise Exception(f"Fetched {url} and got status code:{response.status_code}")
         return BeautifulSoup(response.text, features="lxml")
 
