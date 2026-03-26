@@ -23,7 +23,7 @@ pycurl==7.45.3
 pydantic==2.12.5
 pydantic_core==2.41.5
 pytesseract==0.3.13
-requests==2.32.4
+requests==2.33.0
 scipy==1.16.1
 six==1.16.0
 smart-open==7.0.4
