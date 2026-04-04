@@ -6,6 +6,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
 from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
+import feedparser
 import requests
 import tenacity
 from lxml import etree
@@ -78,3 +79,30 @@ class HtmlFetcher:
             else:
                 logger.info(f"Failed to retrieve image at:{image_url},got status:{image_response.status_code}")
         return image_contents
+
+
+class FeedparserRssFetcher:
+    """RSS/Atom feed fetcher using the feedparser library.
+
+    Handles both RSS and Atom formats and retries on transient failures.
+    """
+
+    @tenacity.retry(stop=tenacity.stop_after_attempt(5),
+                    wait=tenacity.wait_exponential(multiplier=1, min=2, max=30),
+                    before_sleep=tenacity.before_sleep_log(logger, logging.INFO))
+    def get_feeds(self, url):
+        parsed = feedparser.parse(url)
+        if parsed.get('bozo') and not parsed.entries:
+            raise Exception(f"Failed to parse feed at {url}: {parsed.get('bozo_exception')}")
+        feeds = []
+        for entry in parsed.entries:
+            feed_item = FeedItem(
+                title=entry.get('title', ''),
+                link=entry.get('link', ''),
+                description=entry.get('summary', ''),
+                guid=entry.get('id', ''),
+                publication_date=entry.get('published', ''),
+            )
+            feeds.append(feed_item)
+        logger.info(f"Fetched {len(feeds)} entries from {url}")
+        return feeds
