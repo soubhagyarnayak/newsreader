@@ -10,6 +10,9 @@ from hacker_news_manager import HackerNewsManager
 from oped_manager import OpEdManager
 from archiver import Archiver
 from pika_consumer import PikaConsumer
+from feed_fetcher import FeedparserRssFetcher
+from rss_metadata_store import RSSMetadataStore
+from rss_feed_store import RSSFeedStore
 
 TASK_PROCESSOR_QUEUE_NAME = 'newsparser'
 
@@ -46,6 +49,18 @@ def _handler(body):
             else:
                 logger.error(f"Newspaper:{newspaper} is not supported")
 
+        elif message['command'] == 'refreshRSS':
+            feed_id = message['feedId']
+            logger.info(f"Refreshing RSS entries for feed_id:{feed_id}")
+            metadata_store = RSSMetadataStore()
+            feed = metadata_store.get_feed_by_id(feed_id)
+            if feed is None:
+                logger.error(f"No RSS feed found for feed_id:{feed_id}")
+            else:
+                entries = FeedparserRssFetcher().get_feeds(feed.url)
+                RSSFeedStore().add_entries(feed_id, entries)
+                metadata_store.update_last_updated(feed_id)
+                logger.info(f"Refreshed {len(entries)} entries for feed_id:{feed_id}")
         else:
             logger.error(f"Command:{message['command']} is not supported")
         logger.info('Processing completed successfully.')
