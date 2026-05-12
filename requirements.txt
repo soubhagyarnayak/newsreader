@@ -35,6 +35,6 @@ tenacity==9.0.0
 tqdm==4.66.5
 typing-inspection==0.4.2
 typing_extensions==4.15.0
-urllib3==2.6.3
+urllib3==2.7.0
 wptools==0.4.17
 wrapt==2.1.1
