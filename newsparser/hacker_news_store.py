@@ -12,7 +12,7 @@ from database_utils import DatabaseHelper
 
 PostgreQueries = {
     "create_article_table": "CREATE TABLE IF NOT EXISTS HackerNewsArticles (Id INT PRIMARY KEY, Link TEXT UNIQUE, Title TEXT, Description TEXT, Notes TEXT, IsRead BOOL, IsRemoved BOOL, Tags TEXT, CreateTime TIMESTAMPTZ DEFAULT NOW());",  # noqa: E501
-    "add_article": "INSERT INTO HackerNewsArticles (Id, Link, Title, Tags) VALUES (%s,%s,%s, %s) ON CONFLICT (Id) DO UPDATE SET Title = excluded.Title",  # noqa: E501
+    "add_article": "INSERT INTO HackerNewsArticles (Id, Link, Title, Description, Tags) VALUES (%s,%s,%s,%s,%s) ON CONFLICT (Id) DO UPDATE SET Title = excluded.Title",  # noqa: E501
     "mark_article_removed": "UPDATE HackerNewsArticles SET IsRemoved = true WHERE Id=%s",  # noqa: E501
     "purge_removed_articles": "DELETE FROM HackerNewsArticles WHERE IsRemoved=true AND CreateTime < %s",  # noqa: E501
     "get_n_articles": "SELECT TOP %d ARTICLES FROM HackerNewsArticles WHERE !IsRemoved AND !IsRead ORDER BY CreateTime ASC",  # noqa: E501
@@ -31,7 +31,7 @@ class HackerNewsStore:
             cursor = connection.cursor()
             try:
                 cursor.execute(self._get_query('add_article'),
-                               (article.id, article.link, article.title, article.tags))
+                               (article.id, article.link, article.title, article.content, article.tags))
             except psycopg2.IntegrityError as e:
                 logger.info(e)
 
