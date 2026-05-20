@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from feed_fetcher import HtmlFetcher
+from html_utils import HtmlUtils
 
 HACKER_NEWS_URL = "https://news.ycombinator.com/"
 
@@ -14,6 +15,8 @@ class HackerNewsArticle:
     id: str
     link: str
     title: str
+    tags: str
+    content: str
 
     def __str__(self):
         encoded_title = self.title.encode("utf8")
@@ -51,7 +54,8 @@ class HackerNewsParser:
                 if not article_links:
                     continue
                 link = article_links[0].get("href")
-                url_article_map[link] = HackerNewsArticle(article_id, link, article_links[0].text)
+                content, tags = HtmlUtils.extract_text_and_keywords_from_url(link)
+                url_article_map[link] = HackerNewsArticle(article_id, link, article_links[0].text, tags, content)
         return url_article_map
 
     def parse_comments(self, article_url):
