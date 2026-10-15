@@ -4,7 +4,7 @@ A set of python scripts to fetch relevant articles and news from web and index t
 Depending upon need the scrips can also summarize and analyze the content.
 
 ## Setup
-The tool is tested for Python 3.12.
+The tool is tested for Python 3.15.
 
 ### Ubuntu
 
@@ -51,6 +51,11 @@ Tesseract main binary needs to be installed separately
 brew install tesseract tesseract-lang
 ```
 `tesseract-lang` includes Odia (`ori`) language data at `/opt/homebrew/share/tessdata/ori.traineddata`.
+
+#### install torch until the package is published
+```
+pip3 install torch --index-url https://download.pytorch.org/whl/cpu
+```
 
 #### Install python dependencies
 ```bash

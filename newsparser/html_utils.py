@@ -1,7 +1,7 @@
 import requests
 import trafilatura
 
-from keybert import KeyBERT
+lazy from keybert import KeyBERT
 
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',

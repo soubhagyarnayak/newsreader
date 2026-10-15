@@ -1,4 +1,4 @@
-FROM python:3.14-slim as devo
+FROM python:3.15-slim AS devo
 
 LABEL maintainer="Soubhagya R Nayak <soubhagya.r.nayak@gmail.com>"
 
@@ -7,13 +7,15 @@ LABEL maintainer="Soubhagya R Nayak <soubhagya.r.nayak@gmail.com>"
 RUN apt-get update && apt-get install apt-file -y && apt-file update
 RUN apt-get install -y libssl-dev libcurl4-openssl-dev gcc libpq-dev g++ libxml2-dev libxslt1-dev python3-dev
 
+RUN pip install --user torch --index-url https://download.pytorch.org/whl/cpu
+
 COPY requirements.txt requirements.txt
 RUN pip install --user --requirement requirements.txt
 RUN pip install --user psycopg2-binary
 
 COPY ./newsparser /root/.local/newsparser
 
-FROM python:3.14-slim
+FROM python:3.15-slim
 
 COPY --from=devo /root/.local /root/.local
 
