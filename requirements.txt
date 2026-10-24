@@ -4,7 +4,7 @@ anthropic==1.14.0
 anyio==4.14.2
 babel==2.18.0
 beautifulsoup4==4.12.3
-certifi==2024.7.4
+certifi==2026.10.19
 chardet==5.2.0
 charset-normalizer==3.4.4
 click==8.4.0
